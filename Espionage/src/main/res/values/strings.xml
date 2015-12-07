@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Espionage</string>
+    <string name="Stab">Stab</string>
+    <string name="Shoot">Shoot</string>
+    <string name="Search">Search</string>
+
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".ButtonsFragment"
+    android:gravity="bottom"
+    android:padding="12dp">
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Shoot"
+        android:textSize="@dimen/font_size"
+        android:id="@+id/Shoot"
+        android:layout_gravity="center_horizontal"
+        android:onClick="sendShoot" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Stab"
+        android:id="@+id/Stab"
+        android:textSize="@dimen/font_size"
+        android:onClick="sendStab"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:id="@+id/Search"
+        android:onClick="sendSearch"
+        android:layout_gravity="center_horizontal"
+        android:textSize="@dimen/font_size" />
+</LinearLayout>
