@@ -6,7 +6,15 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * Created by Louis on 12/8/15.
+ * This expanded arc class is capable of making the draw buffers for any sort of circle or arc that
+ * your beautiful little heart desires. Note that trig functions are costly so we do a snazzy arc
+ * draw based on tangent lines that only requires one trig evaluation at the beginning.
+ *
+ * Need to modify class so it can apply projections and camera transformations,
+ * as well as draw the actual shape.
+ *
+ * Note that right now I've been using sample code that requires 3-space, but my coordinates are
+ * generated in 2-space. I should look up how to 2-d in Android.
  */
 public class ExpandedArc {
 
@@ -20,6 +28,8 @@ public class ExpandedArc {
 
     private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // order to draw vertices
 
+    private int vertexCount;
+
     //Three overloaded constructors exist. One draws a circle, one draws a circle with a defined
     //number of line segments, and the last draws an arc from a start angle to a finish angle with
     //a defined number of line segments.
@@ -27,6 +37,7 @@ public class ExpandedArc {
     //Default to drawing 100 segments
     public ExpandedArc(float cx, float cy, float r) {
         // create requested arc
+        vertexCount = 100;
         arcCoords=MakeCircle(cx,cy,r,100);
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
@@ -36,6 +47,8 @@ public class ExpandedArc {
         vertexBuffer = bb.asFloatBuffer();
         vertexBuffer.put(arcCoords);
         vertexBuffer.position(0);
+
+        //Establish a draw order here or things will break.
 
         // initialize byte buffer for the draw list
         ByteBuffer dlb = ByteBuffer.allocateDirect(
@@ -50,6 +63,7 @@ public class ExpandedArc {
     //Draw a circle with X segments
     public ExpandedArc(float cx, float cy, float r, int num_segments) {
         //create requested arc
+        vertexCount = num_segments;
         arcCoords=MakeCircle(cx,cy,r,num_segments);
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
@@ -72,6 +86,7 @@ public class ExpandedArc {
     //Draw an arc with X segments
     public ExpandedArc(float cx, float cy, float r, float s_angle, float f_angle, int num_segments) {
         //create requested arc
+        vertexCount = num_segments;
         arcCoords=MakeArc(cx,cy,r,s_angle,f_angle,num_segments);
 
         // initialize vertex byte buffer for shape coordinates

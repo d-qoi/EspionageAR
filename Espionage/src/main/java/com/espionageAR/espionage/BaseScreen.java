@@ -11,6 +11,23 @@ import android.view.View;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
+/**
+ * This is the main for drawing the screen. Right now this can draw the basic three-button with
+ * radar screen.
+ *
+ * What still needs to be implemented (for first release):
+ *   - A gatekeeper splash screen that forces you to log in if networking isn't up.
+ *   - A secondary screen for account info which has:
+ *     - ID number
+ *     - Alias
+ *     - Score
+ *     - Money
+ *     - Logout button
+ *   - OnCreate needs to be modified to check for a running service before starting networking
+ *
+ * What would be nice to fix before first release:
+ *   - How do I make the OpenGL frame not draw across the entire screen height?
+ */
 
 public class BaseScreen extends FragmentActivity {
 
@@ -59,6 +76,8 @@ public class BaseScreen extends FragmentActivity {
         }
     }
 
+    //So unless we want to change the gui response, shoot and stab are done. The server handles
+    //value updating, so the heartbeat function will catch a score and money change.
     public void sendShoot(View view) {
         Toast.makeText(this, "Shooting!", Toast.LENGTH_SHORT).show();
 
@@ -84,6 +103,6 @@ public class BaseScreen extends FragmentActivity {
     }
 
     public void sendSearch(View view) {
-        //Left here if we want to extend search functionality.
+        //This is going to be more complex.
     }
 }

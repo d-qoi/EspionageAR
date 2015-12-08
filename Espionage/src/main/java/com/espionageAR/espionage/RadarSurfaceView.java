@@ -4,7 +4,8 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 
 /**
- * Created by Louis on 12/7/15.
+ * This class is here solely to make OpenGL play nice. You have to set up the renderer
+ * within a SurfaceView.
  */
 class RadarSurfaceView extends GLSurfaceView {
 

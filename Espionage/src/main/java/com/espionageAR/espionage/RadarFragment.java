@@ -7,8 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by Louis on 12/7/15.
+ * This fragment sets up the radar. It is boring.
  */
+
 public class RadarFragment extends Fragment {
 
     @Override
