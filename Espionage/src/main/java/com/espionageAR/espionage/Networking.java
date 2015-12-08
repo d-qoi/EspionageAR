@@ -7,20 +7,8 @@ package com.espionageAR.espionage;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Message;
-import android.support.v4.app.FragmentActivity;
-import android.view.View;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.Button;
-import android.view.Menu;
 import android.widget.Toast;
-import android.view.View.OnClickListener;
-
-import java.util.Random;
 
 
 public class Networking extends IntentService {
