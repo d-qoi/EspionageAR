@@ -15,6 +15,7 @@ package com.espionageAR.espionage;
  *
  * What still needs to be implemented:
  *   - Server communications need to be established (I do not know how to network so maybe Alex?)
+ *      - Server communication needs to be terminated on log off
  *   - GPS+Compass need to be read, JSON'd (maybe?), and sent to the server each heartbeat
  *   - During server heartbeat any messages from the server should be read
  *   - OnShoot, OnStab, and OnSearch need to send messages to the server
