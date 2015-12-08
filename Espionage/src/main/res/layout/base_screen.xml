@@ -5,19 +5,18 @@
     android:background="#222222"
     tools:context=".BaseScreen">
 
-
-    <fragment android:name="com.espionageAR.espionage.ButtonsFragment"
-        android:id="@+id/buttons_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        tools:layout="@layout/buttons_fragment" />
-
-    <fragment android:name="com.espionageAR.espionage.ButtonsFragment"
+    <fragment android:name="com.espionageAR.espionage.RadarFragment"
         android:id="@+id/radar_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top"
         tools:layout="@layout/radar_fragment" />
+
+    <fragment android:name="com.espionageAR.espionage.ButtonsFragment"
+        android:id="@+id/buttons_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        tools:layout="@layout/buttons_fragment" />
 
 </FrameLayout>

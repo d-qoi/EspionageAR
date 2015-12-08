@@ -33,6 +33,7 @@ public class BaseScreen extends FragmentActivity {
         //Create the networking service.
         Intent networkIntent = new Intent(this, Networking.class);
         bindService(networkIntent, mConnection, Context.BIND_AUTO_CREATE);
+        Toast.makeText(this, "Networking Started", Toast.LENGTH_SHORT).show();
 
         //This creates the layout and locks the orientation.
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

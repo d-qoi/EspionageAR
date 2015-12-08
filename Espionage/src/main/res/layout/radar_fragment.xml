@@ -10,11 +10,4 @@
     android:gravity="top"
     android:padding="12dp">
 
-
-    <SurfaceView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/RadarSurface"
-        android:layout_gravity="top" />
-
 </LinearLayout>

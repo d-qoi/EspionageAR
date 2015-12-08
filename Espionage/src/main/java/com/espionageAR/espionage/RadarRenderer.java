@@ -2,6 +2,8 @@ package com.espionageAR.espionage;
 
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.widget.Toast;
+
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -13,7 +15,7 @@ public class RadarRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 unused, EGLConfig config)
     {
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(2.0f, 2.0f, 2.0f, 1.0f);
     }
 
     public void onDrawFrame(GL10 unused) {
