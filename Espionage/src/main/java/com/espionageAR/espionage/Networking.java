@@ -18,6 +18,7 @@ package com.espionageAR.espionage;
  *      - Server communication needs to be terminated on log off
  *   - GPS+Compass need to be read, JSON'd (maybe?), and sent to the server each heartbeat
  *   - During server heartbeat any messages from the server should be read
+ *      - Unless we can set up an active listener. Then that is much better.
  *   - OnShoot, OnStab, and OnSearch need to send messages to the server
  *   - OnShoot and OnStab need to receive success/failure from the server
  *   - OnSearch should receive distance+angle for each found player from the server
