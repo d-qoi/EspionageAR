@@ -94,14 +94,14 @@ public class Networking extends IntentService {
        //Try 5 ping attempts
        boolean connected=false;
        for (int x=0; x<5&&!connected; x++){
-            connected = pingURL(websiteURL);
+            connected = pingURL(websiteURL+"Ping");
        }
 
        //If no ping received, give up and quit.
-       if (!connected){
-           Toast.makeText(this, "No Server Communication", Toast.LENGTH_LONG).show();
-           Toast.makeText(this, "Networking stopping", Toast.LENGTH_SHORT).show();
-           stopSelf();
+           if (!connected){
+               Toast.makeText(this, "No Server Communication", Toast.LENGTH_LONG).show();
+               Toast.makeText(this, "Networking stopping", Toast.LENGTH_SHORT).show();
+               stopSelf();
        }
     }
 
