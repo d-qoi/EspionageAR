@@ -1,0 +1,13 @@
+Included below is an outline of the HTTP API for client-server communication.
+
+NAME            COM TYPE    ARGS                            STATE CODES                                             RESPONSE
+
+CreateUser      Post        Username, Password, NewUser     200-Login 201-Created 409-Wrong UN/Pass 404-No Entry    UID token
+SetLocation     Post        GPS, UID, Compass               200-Success 400-Failure                                 N/A
+Heartbeat       Put         GPS, UID                        200-Updated 204-Shot 206-Stabbed 400-Failure            Searching/Shooting User Heading Range (Degrees, List)
+GetGameState    Get         UID                             200-Success 404-Not Active                              Score, Cash
+Stab            Put         GPS, UID                        200-Success 400-Bad Position 404-Not Active             UID of Victim (0 for failure)
+Shoot           Put         GPS, UID, Compass               200-Success 400-Bad Position 404-Not Active             UID of Victim (0 for failure)
+Search          Put         GPS, UID                        200-Success 400-Bad Position 404-Not Active             List of players by Xpos-Ypos-ID within XXX ft of player (X and Y are 0-200, where 100,100 is the player)
+RespawnTimer    Get         UID                             200-Success 404-Not Active                              Time until respawn in seconds
+Logout          Delete      UID                             200-Success 404-Not Active                              N/A

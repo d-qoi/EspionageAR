@@ -27,14 +27,15 @@ import android.widget.Toast;
  *     - Money
  *     - Logout button
  *   - Check the login status when actions happen, maybe?
+ *   - A death lockout screen with log out option
  */
 
 public class BaseScreen extends FragmentActivity {
 
     Networking mService;
     boolean mBound = false;
-    //This is kinda dirty but I'll keep it just because
-    boolean login = false;
+    //Set the death timer in seconds
+    int DeathTimer=0;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

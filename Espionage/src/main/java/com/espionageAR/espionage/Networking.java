@@ -26,6 +26,7 @@ package com.espionageAR.espionage;
  *   [ ] OnShoot and OnStab need to receive success/failure from the server
  *   [ ] OnSearch should receive radar plotting coordinates for each found player from the server
  *      [ ] This puts minor computational load on the server, but compresses data, which is important.
+ *   [ ] Respawn time update.
  */
 
 import android.app.IntentService;
@@ -149,6 +150,29 @@ public class Networking extends IntentService {
     }
 
     private void heartbeat(){
+        int httpCode=503;
+        //Communicate with server
+
+        //If a 204 is returned, player is shot. If a 206 is returned, stabbed, 200 is success, 400 is failure
+        switch(httpCode){
+            case 200:
+
+                break;
+            case 204:
+
+                break;
+            case 206:
+
+                break;
+            case 400:
+                Toast.makeText(this, "Invalid Player Info Given!", Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                Toast.makeText(this, "Server Com. Error!", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+
 
         return;
     }
@@ -164,6 +188,12 @@ public class Networking extends IntentService {
     }
 
     private void updateGameState(){
-        //
+        //Here we need to get the score and cash from the server
+    }
+
+    public int updateDeathTimer(){
+        int DeathTimer=0;
+        //Get the deathtimer value from the server.
+        return DeathTimer;
     }
 }
