@@ -113,7 +113,7 @@ public class BaseScreen extends FragmentActivity {
     public void sendShoot(View view) {
         //Toast.makeText(this, "Shooting!", Toast.LENGTH_SHORT).show();
 
-        int result = mService.onShoot (1);
+        int result = mService.onShoot();
 
         //Check result. If a valid id is returned, tell the player who they hit.
         if (result==0) {
