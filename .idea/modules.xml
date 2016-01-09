@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Espionage/Espionage.iml" filepath="$PROJECT_DIR$/Espionage/Espionage.iml" />
       <module fileurl="file://$PROJECT_DIR$/EspionageProject.iml" filepath="$PROJECT_DIR$/EspionageProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/RadarCustomView/RadarCustomView.iml" filepath="$PROJECT_DIR$/RadarCustomView/RadarCustomView.iml" />
     </modules>
   </component>
 </project>

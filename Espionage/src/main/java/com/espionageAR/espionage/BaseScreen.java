@@ -1,10 +1,12 @@
 package com.espionageAR.espionage;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
@@ -16,38 +18,64 @@ import android.widget.Toast;
  * radar screen.
  *
  * What still needs to be implemented (for first release):
- *   - A gatekeeper splash screen that forces you to log in if networking isn't up.
- *   - A secondary screen for account info which has:
+ *   - The login screen needs to be made and do things
+ *   - The radar does not draw right now
+ *   - A secondary screen for account info via left swipe which has:
  *     - ID number
  *     - Alias
  *     - Score
  *     - Money
  *     - Logout button
- *   - OnCreate needs to be modified to check for a running service before starting networking
- *
- * What would be nice to fix before first release:
- *   - How do I make the OpenGL frame not draw across the entire screen height?
+ *   - Check the login status when actions happen, maybe?
  */
 
 public class BaseScreen extends FragmentActivity {
 
     Networking mService;
     boolean mBound = false;
+    //This is kinda dirty but I'll keep it just because
+    boolean login = false;
 
     public void onCreate(Bundle savedInstanceState) {
-
-        //Create the networking service.
-        Intent networkIntent = new Intent(this, Networking.class);
-        bindService(networkIntent, mConnection, Context.BIND_AUTO_CREATE);
-        Toast.makeText(this, "Networking Started", Toast.LENGTH_SHORT).show();
-
-        //This creates the layout and locks the orientation.
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.base_screen);
 
+        //Check if networking exists, create or bind
+        if(isMyServiceRunning(Networking.class))
+        {
+            //This is where the magic happens to find or create. In this case the current intent is found
+            Intent networkIntent = new Intent(this, Networking.class);
+            bindService(networkIntent, mConnection, Context.BIND_AUTO_CREATE);
+            Toast.makeText(this, "Networking Bound", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            //In this case a new intent is created.
+            Intent networkIntent = new Intent(this, Networking.class);
+            bindService(networkIntent, mConnection, Context.BIND_AUTO_CREATE);
+            Toast.makeText(this, "Networking Started", Toast.LENGTH_SHORT).show();
+        }
+        //Set screen orientation
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        //Run the login screen if necessary, else start main screen
+        if (mService.isLoggedIn())
+            setContentView(R.layout.base_screen);
+        else
+            setContentView(R.layout.login_screen);
     }
 
+    //Class to check if service exists:
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Ensure appropriate behavior for service binding.
     private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
@@ -63,39 +91,53 @@ public class BaseScreen extends FragmentActivity {
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
         }
-
-
     };
 
     protected void onStop() {
         super.onStop();
-        // Unbind from the service
+        // Unbind from the networking service
         if (mBound) {
             unbindService(mConnection);
             mBound = false;
         }
     }
 
-    //So unless we want to change the gui response, shoot and stab are done. The server handles
-    //value updating, so the heartbeat function will catch a score and money change.
+    //Below this comment lies the search, shoot, and stab functions.
+    //Stab and shoot are done. Search requires some graphics interactions.
     public void sendShoot(View view) {
-        Toast.makeText(this, "Shooting!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Shooting!", Toast.LENGTH_SHORT).show();
 
         int result = mService.onShoot (1);
 
-        if (result==1) {
-            Toast.makeText(this, "Hit!", Toast.LENGTH_SHORT).show();
-        }
-        else {
+        //Check result. If a valid id is returned, tell the player who they hit.
+        if (result==0) {
             Toast.makeText(this, "Miss!", Toast.LENGTH_SHORT).show();
         }
+        else if(result<100000000||result>=1000000000){
+            Toast.makeText(this, "Invalid ID returned. :(", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Hit player "+Integer.toString(result),Toast.LENGTH_SHORT).show();
+        }
+
 
     }
 
     public void sendStab(View view) {
-        Toast.makeText(this, "Stabbing!", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Stabbing!", Toast.LENGTH_SHORT).show();
 
-        int result = mService.onShoot (1);
+        int result = mService.onStab ();
+
+        //Check result. If a valid id is returned, tell the player who they hit.
+        if (result==0) {
+            Toast.makeText(this, "Miss!", Toast.LENGTH_SHORT).show();
+        }
+        else if(result<100000000||result>=1000000000){
+            Toast.makeText(this, "Invalid ID returned. :(", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "Hit player "+Integer.toString(result),Toast.LENGTH_SHORT).show();
+        }
 
         if (result==1) {
             Toast.makeText(this, "Success!", Toast.LENGTH_SHORT).show();
@@ -105,4 +147,6 @@ public class BaseScreen extends FragmentActivity {
     public void sendSearch(View view) {
         //This is going to be more complex.
     }
+
+
 }
