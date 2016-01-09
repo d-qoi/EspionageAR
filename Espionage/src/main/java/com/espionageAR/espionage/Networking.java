@@ -27,6 +27,7 @@ package com.espionageAR.espionage;
  *   [ ] OnSearch should receive radar plotting coordinates for each found player from the server
  *      [ ] This puts minor computational load on the server, but compresses data, which is important.
  *   [ ] Respawn time update.
+ *   [ ] Logout.
  */
 
 import android.app.IntentService;
@@ -107,10 +108,10 @@ public class Networking extends IntentService {
     // Binder given to clients
     private final IBinder mBinder = new LocalBinder();
 
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
+
+     //Class used for the client Binder.  Because we know this service always
+     // runs in the same process as its clients, we don't need to deal with IPC.
+
     public class LocalBinder extends Binder {
         Networking getService() {
             // Return this instance of LocalService so clients can call public methods
@@ -133,28 +134,22 @@ public class Networking extends IntentService {
     }
 
     //Below are the action functions. Here there be HTTP Requests.
-    public int onShoot(int shoot) {
-        //Right now this is a dummy function. It waits a while and then returns true.
-        long endTime = System.currentTimeMillis() + 1*1000;
-        while (System.currentTimeMillis() < endTime) {
-            synchronized (this) {
-                try {
-                    wait(endTime - System.currentTimeMillis());
-                } catch (Exception e) {
-                }
-            }
-        }
-        return 1;
+    public int onShoot() {
+        int killID=0;
+
+        return killID;
     }
 
     public int onStab(){
-        //This dummy function is always true now.
-        return 1;
+        int killID=0;
+
+        return killID;
     }
 
-    public int onSearch(int search){
-        //This function needs to return a list of distance+headings.
-        return 1;
+    public long[] onSearch(){
+        long[] playerInfo=null;
+
+        return playerInfo;
     }
 
     //Accessory functions go here.

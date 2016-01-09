@@ -151,7 +151,11 @@ public class BaseScreen extends FragmentActivity {
     }
 
     public void sendSearch(View view) {
-        //This is going to be more complex.
+        //Toast.makeText(this, "Stabbing!", Toast.LENGTH_SHORT).show();
+
+        long[] result = mService.onSearch ();
+
+        //Now pass the result into the drawing app.
     }
 
 
