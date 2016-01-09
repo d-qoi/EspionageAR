@@ -108,6 +108,7 @@ public class BaseScreen extends FragmentActivity {
         }
     }
 
+
     //Below this comment lies the search, shoot, and stab functions.
     //Stab and shoot are done. Search requires some graphics interactions.
     public void sendShoot(View view) {
