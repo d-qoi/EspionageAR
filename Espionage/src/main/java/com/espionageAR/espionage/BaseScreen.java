@@ -28,6 +28,11 @@ import android.widget.Toast;
  *     - Logout button
  *   - Check the login status when actions happen, maybe?
  *   - A death lockout screen with log out option
+ *
+ * Extra features for later:
+ *   - Saving login info securely for re-entry
+ *   - Similarly, a way to save settings
+ *   - Add a way to speed up the heartbeat (server needs to have a cutoff to prevent DOS attacks)
  */
 
 public class BaseScreen extends FragmentActivity {

@@ -1,5 +1,9 @@
 Included below is an outline of the HTTP API for client-server communication.
 
+Website URL for HTTP coms is "http://webserver.EspionageAR.com/API/"
+
+Pinging to "http://webserver.EspionageAR.com/API/Ping". Maybe?
+
 NAME            COM TYPE    ARGS                            STATE CODES                                             RESPONSE
 
 CreateUser      Post        Username, Password, NewUser     200-Login 201-Created 409-Wrong UN/Pass 404-No Entry    UID token

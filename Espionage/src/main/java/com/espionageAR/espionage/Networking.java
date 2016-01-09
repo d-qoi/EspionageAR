@@ -34,7 +34,18 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.IOException;
 import java.lang.String;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class Networking extends IntentService {
@@ -46,9 +57,24 @@ public class Networking extends IntentService {
     private int tickCycle=1000;
 
     //Networking initialization info.
+    HttpClient httpClient = new DefaultHttpClient();
     private boolean initialized=false;
     private String idToken;
     private String uID;
+
+    //Website string. At some point after beta we should probably read this from a text file
+    private String websiteURL="http://webserver.EspionageAR.com/API/";
+
+    //Networking coms initialization
+    HttpPost createUserPost = new HttpPost(websiteURL+"CreateUser");
+    HttpPost locationPost = new HttpPost(websiteURL+"Location");
+    HttpPut heartbeatPut = new HttpPut(websiteURL+"Heartbeat");
+    HttpPut stabPut = new HttpPut(websiteURL+"Stab");
+    HttpPut shootPut = new HttpPut(websiteURL+"Shoot");
+    HttpPut searchPut = new HttpPut(websiteURL+"Search");
+    HttpGet gameStateGet = new HttpGet(websiteURL+"GetGameState");
+    HttpGet respawnTimerGet = new HttpGet(websiteURL+"RespawnTimer");
+    HttpDelete logoutDelete = new HttpDelete(websiteURL+"Logout");
 
     //Related heartbeat info
     private String location;
@@ -58,14 +84,24 @@ public class Networking extends IntentService {
     private int money;
 
 
-
     public Networking() {
         super("Espionage Network");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-       /* Put some networking code here to instantiate network.*/
+       //Try 5 ping attempts
+       boolean connected=false;
+       for (int x=0; x<5&&!connected; x++){
+            connected = pingURL(websiteURL);
+       }
+
+       //If no ping received, give up and quit.
+       if (!connected){
+           Toast.makeText(this, "No Server Communication", Toast.LENGTH_LONG).show();
+           Toast.makeText(this, "Networking stopping", Toast.LENGTH_SHORT).show();
+           stopSelf();
+       }
     }
 
     // Binder given to clients
@@ -98,7 +134,6 @@ public class Networking extends IntentService {
 
     //Below are the action functions. Here there be HTTP Requests.
     public int onShoot(int shoot) {
-        tickCycle=250;
         //Right now this is a dummy function. It waits a while and then returns true.
         long endTime = System.currentTimeMillis() + 1*1000;
         while (System.currentTimeMillis() < endTime) {
@@ -113,15 +148,11 @@ public class Networking extends IntentService {
     }
 
     public int onStab(){
-        //Temporarily speed up the tic; things are happening
-        tickCycle=250;
         //This dummy function is always true now.
         return 1;
     }
 
     public int onSearch(int search){
-        //Temporarily speed up the tic; things are happening
-        tickCycle=250;
         //This function needs to return a list of distance+headings.
         return 1;
     }
@@ -195,5 +226,28 @@ public class Networking extends IntentService {
         int DeathTimer=0;
         //Get the deathtimer value from the server.
         return DeathTimer;
+    }
+
+    //Ping code for networking. Straight from StackOverflow. Ask Alex to make sure it's legit.
+    private static boolean pingURL(final String address) {
+        try {
+            final URL url = new URL(address+"Ping");
+            final HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+            urlConn.setConnectTimeout(1000 * 10); // mTimeout is in seconds
+            //final long startTime = System.currentTimeMillis();
+            urlConn.connect();
+            //final long endTime = System.currentTimeMillis();
+            if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                //Debug statements
+                //System.out.println("Time (ms) : " + (endTime - startTime));
+                //System.out.println("Ping to "+address +" was success");
+                return true;
+            }
+        } catch (final MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
