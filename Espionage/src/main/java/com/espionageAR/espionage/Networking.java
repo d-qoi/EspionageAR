@@ -66,7 +66,7 @@ public class Networking extends IntentService {
     //Website string. At some point after beta we should probably read this from a text file
     private String websiteURL="http://webserver.EspionageAR.com/API/";
 
-    //Networking coms initialization
+    //Networking coms strings. This may also be good to put in a ini file.
     HttpPost createUserPost = new HttpPost(websiteURL+"CreateUser");
     HttpPost locationPost = new HttpPost(websiteURL+"Location");
     HttpPut heartbeatPut = new HttpPut(websiteURL+"Heartbeat");

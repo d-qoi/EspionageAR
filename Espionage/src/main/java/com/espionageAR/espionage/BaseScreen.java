@@ -159,5 +159,4 @@ public class BaseScreen extends FragmentActivity {
         //Now pass the result into the drawing app.
     }
 
-
 }
