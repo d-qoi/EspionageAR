@@ -1,16 +1,18 @@
 package com.espionageAR.espionage;
 
 import android.app.ActivityManager;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
-import android.content.pm.ConfigurationInfo;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.support.v4.app.FragmentActivity;
+import android.widget.EditText;
 import android.widget.Toast;
 
 /**
@@ -18,8 +20,10 @@ import android.widget.Toast;
  * radar screen.
  *
  * What still needs to be implemented (for first release):
- *   - The login screen needs to be made and do things
+ *   - The login screen needs to be able to set a new account
  *   - The radar does not draw right now
+ *   - Need to check with networking to make sure nothing has happened.
+ *   - Search needs to get finished
  *   - A secondary screen for account info via left swipe which has:
  *     - ID number
  *     - Alias
@@ -68,6 +72,20 @@ public class BaseScreen extends FragmentActivity {
             setContentView(R.layout.base_screen);
         else
             setContentView(R.layout.login_screen);
+    }
+
+    //Handle the login event
+    public void sendLogIn(View view) {
+        //Get the text entered
+        String alias = ((EditText)findViewById(R.id.alias)).getText().toString();
+        String password = ((EditText)findViewById(R.id.password)).getText().toString();
+
+        //Digest the password using SHA256, then salt and rehash. Need to fix the DigestUtils problem.
+        String digest = DigestUtils.sha256Hex(password);
+        String salty = DigestUtils.sha256Hex(digest + alias);
+
+        //Send it to the server:
+        int result = mService.onLogIn(alias, salty);
     }
 
     //Class to check if service exists:
@@ -152,11 +170,36 @@ public class BaseScreen extends FragmentActivity {
     }
 
     public void sendSearch(View view) {
-        //Toast.makeText(this, "Stabbing!", Toast.LENGTH_SHORT).show();
-
+        //Do the networking
         long[] result = mService.onSearch ();
 
-        //Now pass the result into the drawing app.
+        //Now pass the result into the drawing code
+        if (result!=null){
+            RadarFragment fragment = (RadarFragment) getSupportFragmentManager().findFragmentById(R.id.radar_fragment);
+            fragment.setArcArray(result);
+        }
+        else{
+            Toast.makeText(this, "No Spies Found!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //This class takes care of opening and closing the new account dialogue.
+    public void newAccount (View view) {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        /*This is code to add a fragment. Commented out until I fix it.
+        NewAccountFragment hello = new NewAccountFragment();
+        fragmentTransaction.add(R.id.fragment_container, hello,);
+        fragmentTransaction.commit();
+        */
+
+    }
+
+    //This is a housekeeping class to check for info from the networking service.
+    //It should be called on startup and I guess on a quick heartbeat. It's pretty small.
+    public void checkEvents() {
+
     }
 
 }

@@ -158,7 +158,7 @@ public class Networking extends IntentService {
     //Third one might do a heartbeat at some point
     //Fourth one returns the current game state
 
-    public int onLogin(String Username,String Password,boolean newUser){
+    public int onLogIn(String Username,String Password){
         //Initialize the code to a service unavailable error.
         int httpCode=503;
 
@@ -167,6 +167,7 @@ public class Networking extends IntentService {
         //Add code here to give the JSON'd username/password. Add a timeout.
 
         //Add code here to set up the location information. Add a timeout.
+
 
         return httpCode;
     }

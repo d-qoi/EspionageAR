@@ -70,6 +70,7 @@ public class Radar extends View {
         pointPaint.setStrokeWidth(1.5F);
         pointPaint.setAlpha(0);
 
+        //We might want to change this draw type, maybe make it translucent or fading at edge.
         arcPaint.setColor(Color.RED);
         arcPaint.setAntiAlias(true);
         arcPaint.setStyle(Paint.Style.STROKE);
@@ -97,8 +98,12 @@ public class Radar extends View {
         mHandler.removeCallbacks(mTick);
     }
 
+    //Does what it says on the tin.
     public void setFrameRate(int fps) { this.fps = fps; }
     public int getFrameRate() { return this.fps; }
+
+    //Set up bounding box for arc draw.
+    RectF arcBox = new RectF(100,1,100,1);
 
     //This is the main animation loop.
     @Override
@@ -134,7 +139,8 @@ public class Radar extends View {
         }
         //If enemies are on, count down and check to turn them back off.
         else if (pointArray!=null&&drawDots){
-            for (int i = Math.min(pointArray.length,maxDots); i > 0; i--) {
+            int maxiter = Math.min(pointArray.length,maxDots);
+            for (int i = maxiter; i > 0; i--) {
                 Point point = pointArray[i-1];
                 if (point != null) {
                     canvas.drawPoint(point.x,point.y,pointPaint);
@@ -145,35 +151,41 @@ public class Radar extends View {
             }
         }
 
-        //Set up bounding box for arc draw. Undersize it a bit so things fit on the canvas.
-        RectF arcBox = new RectF(height-1,1,width-1,1);
+        //Set bounding box size for arc draw. Undersize it a bit so things fit on the canvas.
+        arcBox.set(height-1,1,width-1,1);
 
         //Draw all available arc ranges if on:
         if (arcArray!=null)
         {
-            for (int i = 0; i<Math.min(arcArray.length-1,maxArcs); i+=2) {
+            int maxiter=Math.min(arcArray.length-1,maxArcs);
+            for (int i = 0; i<maxiter; i+=2) {
                 canvas.drawArc(arcBox,arcArray[i],arcArray[i+1],drawWedge,arcPaint);
             }
         }
 
-        //If things are to be calm, empty the lists:
-        if (--calmTimer<=0){
+        //If things are to be calm, null the draw lists.
+        //That first condition is to prevent counting infinitely and overflowing the integer (unlikely but possible).
+        if (calmTimer!=-1 && --calmTimer<0){
             arcArray=null;
+            calmTimer=-1;
         }
-        if (--searchTimer<=0){
+        if (searchTimer!=-1 && --searchTimer<0){
             pointArray=null;
+            searchTimer=-1;
         }
     }
 
 
     //These two methods allow for input of new draw arcs/points.
+    //JUST APPENDING ALLOWS FOR LOTS OF COLLISION. SHOULD THERE BE A SEARCH?
 
+    //Points are passed in as [ID, X-pos, Y-pos]
     public void setPointArray(long[] rawPoints){
        if (pointArray == null){
            //As long as the array isn't full, we create an array of associated points from raw data.
            //TO DO: Grab the player ID and draw that as well.
            pointArray = new Point[rawPoints.length/3];
-           for(int i=0;i<rawPoints.length-1;i+=3){
+           for(int i=0;i<rawPoints.length-2;i+=3){
                pointArray[i/3]=new Point((int)rawPoints[i],(int)rawPoints[i+1]);
            }
         }
@@ -182,7 +194,7 @@ public class Radar extends View {
            Point [] tempArray = new Point[rawPoints.length/3 + pointArray.length];
 
            System.arraycopy(pointArray,0,tempArray,0,pointArray.length);
-           for(int i=0;i<rawPoints.length-1;i+=3){
+           for(int i=0;i<rawPoints.length-2;i+=3){
                tempArray[i/3+pointArray.length]=new Point((int)rawPoints[i],(int)rawPoints[i+1]);
            }
            pointArray = Arrays.copyOf(tempArray,tempArray.length);
@@ -190,9 +202,10 @@ public class Radar extends View {
 
        //Set the display timer and the flash counter.
        searchTimer=searchSeconds*fps;
-       flashCounter=(int)flashDuration*fps;
+       flashCounter=(int)(flashDuration*fps);
     }
 
+    //Arcs are passed as [Angle Start, Angle Duration]
     public void setArcArray(long[] rawArc){
         //If arc array is full, concatenate, otherwise just make a new list.
         if (arcArray == null){
