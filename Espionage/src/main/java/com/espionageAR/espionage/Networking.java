@@ -35,38 +35,65 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.widget.Toast;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.lang.String;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 
 public class Networking extends IntentService {
 
+    ///////////////////////////////////////////////////////////////
+    //Part 1: Service and networking setup.
+    ///////////////////////////////////////////////////////////////
+
     //Set an int to control the server heartbeat. It may be useful to change this depending on
     // if the game is active/background, potentially even allow players to change it, because a
-    // faster heartbeat is not difficult or taxing for us, but it does drain device battery like a
-    // mofo.
+    // faster heartbeat is not difficult or taxing for us, but it does drain device battery
     private int tickCycle=1000;
 
-    //Networking initialization info.
+    //This pair keeps track of how many coms in a row fail. If it goes over max, considers itself
+    //logged out. Not implemented yet.
+    private int droppedComs=0;
+    private int maxDropped=5;
+
+    //Networking initialization info. It could be considered bad form to leave the connection open
+    //while the service is running, but theoretically the heartbeat should keep going constantly so
+    //leaving the connection open makes sense.
     HttpClient httpClient = new DefaultHttpClient();
     private boolean initialized=false;
-    private String idToken;
-    private String uID;
+    private int uID;
+    private String alias;
+    private String saltyPass;
 
-    //Website string. At some point after beta we should probably read this from a text file
-    private String websiteURL="http://webserver.EspionageAR.com/API/";
+    //Website string. Apparently all I need to do for SSL is HTTPS because HttpClient is god?
+    //I really need to talk to someone more experienced about this nuance, I think a lot of complex
+    //stuff is hiding underneath all this.
+    private String websiteURL="https://webserver.EspionageAR.com/API/";
 
-    //Networking coms strings. This may also be good to put in a ini file.
+    //Networking coms. This may also be good to put in a ini file.
     HttpPost createUserPost = new HttpPost(websiteURL+"CreateUser");
     HttpPost locationPost = new HttpPost(websiteURL+"Location");
     HttpPut heartbeatPut = new HttpPut(websiteURL+"Heartbeat");
@@ -79,8 +106,9 @@ public class Networking extends IntentService {
 
     //Related heartbeat info
     private String location;
+    private int shitHappened=-1;
 
-    //Gamestate info
+    //Game state info
     private int score;
     private int money;
 
@@ -133,9 +161,14 @@ public class Networking extends IntentService {
         return true;
     }
 
-    //Below are the action functions. Here there be HTTP Requests.
+    ///////////////////////////////////////////////////////////////
+    //Part 2: Main action functions. Here there be HTTPS Requests.
+    ///////////////////////////////////////////////////////////////
+
     public int onShoot() {
         int killID=0;
+
+        //JSON Location and direction and send it to server.
 
         return killID;
     }
@@ -143,32 +176,72 @@ public class Networking extends IntentService {
     public int onStab(){
         int killID=0;
 
+        //JSON Location and send it to server.
+
         return killID;
     }
 
     public long[] onSearch(){
         long[] playerInfo=null;
 
+        //JSON Location and send it to server.
+
         return playerInfo;
     }
 
-    //Accessory functions go here.
+
+    ///////////////////////////////////////////////////////////////
+    //Part 3: Misc Functions. Dunno
+    ///////////////////////////////////////////////////////////////
+
     //First attempts to log in, returns http code.
     //Second one returns if the login has happened.
     //Third one might do a heartbeat at some point
     //Fourth one returns the current game state
+    //Fifth one is a function to check the death timer, which currently does not exist
 
-    public int onLogIn(String Username,String Password){
+    public int onLogIn(String Username,String Password,boolean newAccount){
         //Initialize the code to a service unavailable error.
         int httpCode=503;
 
-        //Add a ping here
+        //JSON username/password, send to server, extract UID and response code.
+        try {
+            //JSON things
+            JSONObject loginInfo = new JSONObject();
+            loginInfo.put("Username", Username);
+            loginInfo.put("Password", Password);
+            loginInfo.put("newAccount", newAccount);
 
-        //Add code here to give the JSON'd username/password. Add a timeout.
+            StringEntity jsonLogin=new StringEntity(loginInfo.toString(),"UTF-8");
+
+            //Communicate
+            createUserPost.setEntity(jsonLogin);
+            HttpResponse response = httpClient.execute(createUserPost);
+
+            //Parse Response.
+            httpCode = response.getStatusLine().getStatusCode();
+            if(httpCode==200||httpCode==201)
+            {
+                HttpEntity entity = response.getEntity();
+                String jsonTemp = EntityUtils.toString(entity);
+                JSONObject uIDResponse = new JSONObject(jsonTemp);
+
+                //Now that we've completed the transaction, set relevant data values
+                uID = uIDResponse.getInt("UID");
+                saltyPass=Password;
+                alias=Username;
+            }
+        }
+        catch (Exception e) {
+            Toast.makeText(this, "Server Comms Error!", Toast.LENGTH_SHORT).show();
+        }
+        finally {
+        httpClient.getConnectionManager().shutdown();
+        }
 
         //Add code here to set up the location information. Add a timeout.
 
-
+        initialized=(httpCode==200||httpCode==201);
         return httpCode;
     }
 
@@ -178,18 +251,21 @@ public class Networking extends IntentService {
 
     private void heartbeat(){
         int httpCode=503;
-        //Communicate with server
+
+        //JSON Location and Push to Server
+
+        //If the server responds with info, process it.
 
         //If a 204 is returned, player is shot. If a 206 is returned, stabbed, 200 is success, 400 is failure
         switch(httpCode){
             case 200:
-
+                //Nothing to do here
                 break;
             case 204:
-
+                //Do shooting things here
                 break;
             case 206:
-
+                //Do stabbing things here
                 break;
             case 400:
                 Toast.makeText(this, "Invalid Player Info Given!", Toast.LENGTH_SHORT).show();
@@ -204,27 +280,32 @@ public class Networking extends IntentService {
         return;
     }
 
-    public String[] readGameState(){
-        String[] gameState=new String [4];
-        updateGameState();
+    public int[] readGameState(){
+        int[] gameState=new int [2];
 
-        //Separating these out for readability
-        gameState[1]="0";
+        //Get game state from server.
+
+        //Whether or not the server responds, display current info:
+
 
         return gameState;
     }
 
-    private void updateGameState(){
-        //Here we need to get the score and cash from the server
-    }
-
     public int updateDeathTimer(){
-        int DeathTimer=0;
-        //Get the deathtimer value from the server.
+        //Set up the error value
+        int DeathTimer=-1;
+
+        //Get the death timer value from the server here.
+
         return DeathTimer;
     }
 
-    //Ping code for networking. Straight from StackOverflow. Ask Alex to make sure it's legit.
+
+    ///////////////////////////////////////////////////////////////
+    //Part 4: Random support functions, likely from StackOverflow.
+    ///////////////////////////////////////////////////////////////
+
+    //Ping code for networking.
     private static boolean pingURL(final String address) {
         try {
             final URL url = new URL(address+"Ping");

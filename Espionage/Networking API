@@ -1,17 +1,17 @@
 Included below is an outline of the HTTP API for client-server communication.
 
-Website URL for HTTP coms is "http://webserver.EspionageAR.com/API/"
+Website URL for HTTPS coms is "https://webserver.EspionageAR.com/API/"
 
 Pinging to "http://webserver.EspionageAR.com/API/Ping". Maybe?
 
 NAME            COM TYPE    ARGS                            STATE CODES                                             RESPONSE
 
-CreateUser      Post        Username, Password, NewUser     200-Login 201-Created 409-Wrong UN/Pass 404-No Entry    UID token
-SetLocation     Post        GPS, Compass                    200-Success 400-Failure                                 N/A
-Heartbeat       Put         GPS                             200-Updated 204-Shot 206-Stabbed 400-Failure            Searching/Shooting User Direction Array (Arc start,Arc length)
+CreateUser      Post        Username, Password, NewUser     200-Login   201-Created     409-Wrong       404-DNE     UID token
+SetLocation     Post        GPS, Compass                    200-Success 400-Failure                                 None
+Heartbeat       Put         GPS                             200-Updated 204-Shot        206-Stabbed     400-Fail    Searching/Shooting User Direction Array (Arc start,Arc length)
 GetGameState    Get         N/A                             200-Success 404-Not Active                              Score, Cash
-Stab            Put         GPS                             200-Success 400-Bad Position 404-Not Active             UID of Victim (0 for failure)
-Shoot           Put         GPS, Compass                    200-Success 400-Bad Position 404-Not Active             UID of Victim (0 for failure)
-Search          Put         GPS                             200-Success 400-Bad Position 404-Not Active             List of players by Xpos-Ypos-ID within XXX ft of player (X and Y are 0-200, where 100,100 is the player)
+Stab            Put         GPS                             200-Success 400-Bad Pos     404-Not Active              UID of Victim (0 for failure)
+Shoot           Put         GPS, Compass                    200-Success 400-Bad Pos     403-No Cash     404-N/A     UID of Victim (0 for failure)
+Search          Put         GPS                             200-Success 400-Bad Pos     404-Not Active              List of players by Xpos-Ypos-ID within XXX ft of player (X and Y are 0-200, where 100,100 is the player)
 RespawnTimer    Get                                         200-Success 404-Not Active                              Time until respawn in seconds
-Logout          Delete                                      200-Success 404-Not Active                              N/A
+Logout          Delete                                      200-Success 404-Not Active                              None

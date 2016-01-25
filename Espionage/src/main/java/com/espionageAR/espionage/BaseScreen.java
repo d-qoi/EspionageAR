@@ -79,13 +79,14 @@ public class BaseScreen extends FragmentActivity {
         //Get the text entered
         String alias = ((EditText)findViewById(R.id.alias)).getText().toString();
         String password = ((EditText)findViewById(R.id.password)).getText().toString();
+        boolean newAccount=false;
 
         //Digest the password using SHA256, then salt and rehash. Need to fix the DigestUtils problem.
         String digest = DigestUtils.sha256Hex(password);
         String salty = DigestUtils.sha256Hex(digest + alias);
 
         //Send it to the server:
-        int result = mService.onLogIn(alias, salty);
+        int result = mService.onLogIn(alias, salty, newAccount);
     }
 
     //Class to check if service exists:
@@ -198,6 +199,7 @@ public class BaseScreen extends FragmentActivity {
 
     //This is a housekeeping class to check for info from the networking service.
     //It should be called on startup and I guess on a quick heartbeat. It's pretty small.
+    //It also needs to make sure we're logged in.
     public void checkEvents() {
 
     }
