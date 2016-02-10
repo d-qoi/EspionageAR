@@ -6,6 +6,7 @@ Pinging to "http://webserver.EspionageAR.com/API/Ping". Maybe?
 
 NAME            COM TYPE    ARGS                            STATE CODES                                             RESPONSE
 
+CreateUser      Get         N/A                             200-Success 400-Failure                                 SHA-1 Salt String (Used to salt password for !NewUser)
 CreateUser      Post        Username, Password, NewUser     200-Login   201-Created     409-Wrong       404-DNE     UID token
 SetLocation     Post        GPS, Compass                    200-Success 400-Failure                                 None
 Heartbeat       Put         GPS                             200-Updated 204-Shot        206-Stabbed     400-Fail    Alert to Player Directions (Arc start,Arc length)
@@ -20,6 +21,7 @@ Logout          Delete                                      200-Success 404-Not 
 
 RESPONSE            JSON TYPE       NAME/STRUCTURE
 
+SHA-1 Salt String   JSON Object     "Salt"
 UID Token           JSON Object     "UID"
 Alert Directions    JSON Array      [Arc1 Start, Arc1 Length, Arc2 Start, Arc2 Length...]
 Score, Cash         JSON Object     "Score" , "Cash"

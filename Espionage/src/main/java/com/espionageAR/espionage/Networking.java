@@ -100,6 +100,7 @@ public class Networking extends IntentService {
     HttpPut stabPut = new HttpPut(websiteURL+"Stab");
     HttpPut shootPut = new HttpPut(websiteURL+"Shoot");
     HttpPut searchPut = new HttpPut(websiteURL+"Search");
+    HttpGet createUserGet = new HttpGet (websiteURL+"CreateUser");
     HttpGet gameStateGet = new HttpGet(websiteURL+"GetGameState");
     HttpGet respawnTimerGet = new HttpGet(websiteURL+"RespawnTimer");
     HttpDelete logoutDelete = new HttpDelete(websiteURL+"Logout");
@@ -206,10 +207,41 @@ public class Networking extends IntentService {
 
         //JSON username/password, send to server, extract UID and response code.
         try {
+            //Decide if salting password
+            String SaltedPassword = new String();
+            if(newAccount)
+            {
+                SaltedPassword = Password;
+            }
+            else {
+                //Get the salt
+                String salt = "filler";
+                HttpResponse response = httpClient.execute(createUserGet);
+
+                //Parse Response.
+                httpCode = response.getStatusLine().getStatusCode();
+                if(httpCode==200)
+                {
+                    HttpEntity entity = response.getEntity();
+                    String jsonTemp = EntityUtils.toString(entity);
+                    JSONObject saltResponse = new JSONObject(jsonTemp);
+
+                    //Now that we've completed the transaction, set relevant data values
+                    salt = saltResponse.getString("Salt");
+                }
+                //Handle Problems
+                else
+                    return httpCode;
+                httpCode=503;
+
+                //Salt password
+                SaltedPassword = DigestUtils.sha256Hex(Password + salt);
+            }
+
             //JSON things
             JSONObject loginInfo = new JSONObject();
             loginInfo.put("Username", Username);
-            loginInfo.put("Password", Password);
+            loginInfo.put("Password", SaltedPassword);
             loginInfo.put("newAccount", newAccount);
 
             StringEntity jsonLogin=new StringEntity(loginInfo.toString(),"UTF-8");
