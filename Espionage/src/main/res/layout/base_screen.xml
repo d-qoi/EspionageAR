@@ -1,0 +1,21 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#222222">
+
+    <fragment android:name="com.espionageAR.espionage.RadarFragment"
+        android:id="@+id/radar_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        tools:layout="@layout/radar_fragment" />
+
+    <fragment android:name="com.espionageAR.espionage.ButtonsFragment"
+        android:id="@+id/buttons_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        tools:layout="@layout/buttons_fragment" />
+
+</FrameLayout>
